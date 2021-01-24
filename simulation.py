@@ -8,6 +8,7 @@ class Particle:
         self._pos = np.array([x, y]).reshape((1, 2))
         self._id = id
         self._buffer = np.zeros((1, 2))
+        self._limits = list()
 
     @property
     def x(self):
@@ -113,6 +114,7 @@ class Environment:
 
         for p1 in self._particles:
             p1.set_buffer(np.zeros((1, 2)))
+            p1._limits = list()
 
             for p2 in self._particles - {p1}:
                 diff = p2.pos - p1.pos
@@ -132,14 +134,22 @@ class Environment:
                 dist = norm(diff)
 
                 if dist < 2:  # Overlapping Particles
+                    p1._limits.append(diff / dist)
                     diff = diff * -(dist - 2) ** 2
-                else:
+                else:  # Apply rule
                     diff = diff * self._rule[p1._id][p2._id] / (dist**2)
 
                 p1._buffer += diff * delta
 
         # Move Particles
         for particle in self._particles:
+
+            # Apply Particle limits, if any
+            for lim in particle._limits:
+                x = particle._buffer.dot(lim.T)
+                if x > 0:
+                    particle._buffer -= lim * x
+
             pos = particle.pos + particle._buffer
 
             # Fixed boundary condition
