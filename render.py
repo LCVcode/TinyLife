@@ -43,15 +43,20 @@ def main_loop(window, env):
     running, paused = True, False
 
     while running:
-        time = clock.tick(60) #similar to timerDelay
+        time = clock.tick(60)
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    running = False
+                if event.key == pg.K_SPACE:
+                    paused = not paused
 
         if not paused:
             env.tick(0.05)
             render(window, env)
 
-    pygame.quit()
+    pg.quit()
 
