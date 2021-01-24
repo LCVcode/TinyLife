@@ -1,4 +1,4 @@
-from simulation import Environment, RuleSet, Particle
+from simulation import Environment, RuleSet, Particle, BoundaryType
 from render import get_window, render
 import time
 
@@ -6,11 +6,19 @@ import time
 import numpy as np
 
 
-env = Environment((40, 35))
+env = Environment((40, 80), boundary=BoundaryType.TORUS)
 
 rule = RuleSet(4)
-rule.randomize()
+rule.fill(0)
+
+rule._val[0][1] = 1
+rule._val[1][2] = 1
+rule._val[2][0] = -0.5
+rule._val[0][0] = -0.2
+rule._val[1][1] = -0.2
+
 rule.make_symmetric()
+rule.randomize()
 
 env.set_rule(rule)
 

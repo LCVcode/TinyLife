@@ -42,7 +42,11 @@ class Particle:
 
 class RuleSet:
     def __init__(self, dim):
-        self._val = [[0 for _ in range(dim)] for _ in range(dim)]
+        self.fill(0, dim)
+
+    def fill(self, value, dim=None):
+        dim = dim or self.dim
+        self._val = [[value for _ in range(dim)] for _ in range(dim)]
 
     @property
     def dim(self):
@@ -57,8 +61,8 @@ class RuleSet:
         return self._val[i]
 
     def make_symmetric(self):
-        for i in range(1, self.dim):
-            for j in range(i+1, self.dim):
+        for i in range(self.dim - 1):
+            for j in range(i + 1, self.dim):
                 new_val = (self._val[i][j] + self._val[j][i]) / 2
                 self._val[i][j] = new_val
                 self._val[j][i] = new_val
@@ -66,6 +70,7 @@ class RuleSet:
 
 class BoundaryType(Enum):
     FIXED = 0
+    TORUS = 1
 
 
 class Environment:
@@ -99,28 +104,46 @@ class Environment:
         self._particles.add(Particle(*pos, id))
 
     def tick(self, delta=0.001):
+        wid, hei = self.width / 2, self.height / 2
+
         for p1 in self._particles:
             p1.set_buffer(np.zeros((1, 2)))
+
             for p2 in self._particles - {p1}:
                 diff = p2.pos - p1.pos
+
+                if self._boundary == BoundaryType.TORUS:
+
+                    if diff[0][0] > wid:
+                        diff[0][0] -= self.width
+                    elif diff[0][0] < -wid:
+                        diff[0][0] += self.width
+
+                    if diff[0][1] > hei:
+                        diff[0][1] -= self.height
+                    elif diff[0][1] < -hei:
+                        diff[0][1] += self.height
+
                 dist = norm(diff)
 
                 if dist < 2:  # Overlapping Particles
-                    diff = diff * (dist - 2) / (dist**2)
+                    diff = diff * -(dist - 2) ** 2
                 else:
                     diff = diff * self._rule[p1._id][p2._id] / (dist**2)
 
                 p1._buffer += diff * delta
 
         # Move Particles
-        wid, hei = self.width / 2 - 1, self.height / 2 - 1
         for particle in self._particles:
             pos = particle.pos + particle._buffer
 
             # Fixed boundary condition
             if self._boundary == BoundaryType.FIXED:
-                pos[0][0] = max(-wid, min(wid, pos[0][0]))
-                pos[0][1] = max(-hei, min(wid, pos[0][1]))
+                pos[0][0] = max(-wid+1, min(wid-1, pos[0][0]))
+                pos[0][1] = max(-hei+1, min(hei-1, pos[0][1]))
+            elif self._boundary == BoundaryType.TORUS:
+                pos[0][0] = ((pos[0][0] + wid) % self.width) - wid
+                pos[0][1] = ((pos[0][1] + hei) % self.height) - hei
 
             particle.set_pos(pos)
 
