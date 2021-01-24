@@ -1,5 +1,5 @@
 from simulation import Environment, RuleSet, Particle, BoundaryType
-from render import get_window, render
+from render import get_window, render, main_loop
 import time
 
 
@@ -33,9 +33,6 @@ env.add_particle((-20, -20), 3)
 
 win = get_window(env)
 
-while True:
-    render(win, env)
-    env.tick(0.1)
+main_loop(win, env)
 
-time.sleep(2)
 

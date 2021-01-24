@@ -22,6 +22,7 @@ def get_window(env):
 
     return window
 
+
 def render(window, env):
     window.fill(_config['bg'])
     scale = _config['scale']
@@ -34,4 +35,23 @@ def render(window, env):
         pg.draw.circle(window, color, pos, scale)
 
     pg.display.flip()
+
+
+def main_loop(window, env):
+    clock = pg.time.Clock()
+
+    running, paused = True, False
+
+    while running:
+        time = clock.tick(60) #similar to timerDelay
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                running = False
+
+        if not paused:
+            env.tick(0.05)
+            render(window, env)
+
+    pygame.quit()
 
