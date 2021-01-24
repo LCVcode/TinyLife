@@ -6,19 +6,13 @@ import time
 import numpy as np
 
 
-env = Environment((40, 80), boundary=BoundaryType.TORUS)
+env = Environment((80, 160), boundary=BoundaryType.TORUS)
 
 rule = RuleSet(4)
 rule.fill(0)
 
-rule._val[0][1] = 1
-rule._val[1][2] = 1
-rule._val[2][0] = -0.5
-rule._val[0][0] = -0.2
-rule._val[1][1] = -0.2
-
-rule.make_symmetric()
 rule.randomize()
+rule.make_symmetric()
 
 env.set_rule(rule)
 
@@ -30,6 +24,8 @@ env.add_particle((-5, 0), 2)
 env.add_particle((5, 50), 2)
 env.add_particle((-1, -4), 3)
 env.add_particle((-20, -20), 3)
+env.add_particle((10, 70), 3)
+env.add_particle((10, 21), 3)
 
 win = get_window(env)
 

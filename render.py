@@ -3,7 +3,7 @@ import pygame as pg
 
 
 _config = {
-        'scale': 10,
+        'scale': 5,
         'colors': [(178, 34, 34),  # Firebrick
                    ( 30,144,255),  # Dodger blue
                    (255,215,  0),  # Gold
@@ -43,15 +43,22 @@ def main_loop(window, env):
     running, paused = True, False
 
     while running:
-        time = clock.tick(60) #similar to timerDelay
+        time = clock.tick(0)
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
 
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    running = False
+
+                if event.key == pg.K_SPACE:
+                    paused = not paused
+
         if not paused:
             env.tick(0.05)
             render(window, env)
 
-    pygame.quit()
+    pg.quit()
 
