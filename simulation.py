@@ -103,6 +103,11 @@ class Environment:
     def add_particle(self, pos, id=0):
         self._particles.add(Particle(*pos, id))
 
+    def add_random_particle(self):
+        pos = (rng.uniform(0, self.width), rng.uniform(0, self.height))
+        _id = rng.randint(0, self._rule.dim - 1)
+        self.add_particle(pos, _id)
+
     def tick(self, delta=0.001):
         wid, hei = self.width / 2, self.height / 2
 
