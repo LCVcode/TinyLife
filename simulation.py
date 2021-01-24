@@ -112,19 +112,15 @@ class Environment:
 
                 p1._buffer += diff * delta
 
-            # Temporary FIXED boundaries
-            p1._buffer[0][0] = max(0, min(self.width, p1._buffer[0][0]))
-            p1._buffer[0][1] = max(0, min(self.width, p1._buffer[0][1]))
-
         # Move Particles
+        wid, hei = self.width / 2 - 1, self.height / 2 - 1
         for particle in self._particles:
             pos = particle.pos + particle._buffer
 
+            # Fixed boundary condition
             if self._boundary == BoundaryType.FIXED:
-                wid, hei = self.width / 2 - 1, self.height / 2 - 1
                 pos[0][0] = max(-wid, min(wid, pos[0][0]))
                 pos[0][1] = max(-hei, min(wid, pos[0][1]))
-                # print(tuple(pos[0]))
 
             particle.set_pos(pos)
 
