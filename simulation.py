@@ -82,11 +82,11 @@ class Environment:
 
     @property
     def width(self):
-        return self._shape[0]
+        return self._shape[1]
 
     @property
     def height(self):
-        return self._shape[1]
+        return self._shape[0]
 
     @property
     def shape(self):
@@ -116,6 +116,15 @@ class Environment:
             p1._buffer[0][0] = max(0, min(self.width, p1._buffer[0][0]))
             p1._buffer[0][1] = max(0, min(self.width, p1._buffer[0][1]))
 
+        # Move Particles
         for particle in self._particles:
-            particle.set_pos(particle.pos + particle._buffer)
+            pos = particle.pos + particle._buffer
+
+            if self._boundary == BoundaryType.FIXED:
+                wid, hei = self.width / 2 - 1, self.height / 2 - 1
+                pos[0][0] = max(-wid, min(wid, pos[0][0]))
+                pos[0][1] = max(-hei, min(wid, pos[0][1]))
+                # print(tuple(pos[0]))
+
+            particle.set_pos(pos)
 
