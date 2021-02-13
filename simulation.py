@@ -6,9 +6,8 @@ from numpy.linalg import norm
 class Particle:
     def __init__(self, x, y, id=0):
         self._pos = np.array([x, y]).reshape((1, 2))
+        self._vel = np.array([0, 0]).reshape((1, 2))
         self._id = id
-        self._buffer = np.zeros((1, 2))
-        self._limits = list()
 
     @property
     def x(self):
@@ -22,13 +21,33 @@ class Particle:
     def y(self):
         return self._pos[0][1]
 
-    @x.setter
+    @y.setter
     def y(self, val):
         self._pos[0][1] = val
 
     @property
+    def vx(self):
+        return self._vel[0][0]
+
+    @vx.setter
+    def vx(self, val):
+        self._vel[0][0] = val
+
+    @property
+    def vy(self):
+        return self._vel[0][1]
+
+    @vy.setter
+    def vy(self, val):
+        self._vel[0][1] = val
+
+    @property
     def pos(self):
         return np.round(self._pos, 4)
+
+    @property
+    def vel(self):
+        return np.round(self._vel, 4)
 
     @property
     def id(self):
@@ -39,6 +58,9 @@ class Particle:
 
     def set_pos(self, vector):
         self._pos = vector
+
+    def set_vel(self, vector):
+        self._vel = vector
 
 
 class RuleSet:
