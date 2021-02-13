@@ -8,6 +8,9 @@ _config = {
                    ( 30,144,255),  # Dodger blue
                    (255,215,  0),  # Gold
                    (255,  0,255),  # Magenta
+                   (  0,255,  0),  # Lime
+                   (244,164, 96),  # Sandy brown
+                   (176,196,222),  # Light steel blue
                    ],
         'bg':( 40, 40, 40)
         }

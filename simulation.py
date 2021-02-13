@@ -65,8 +65,10 @@ class Particle:
 
 class ForceGraph:
     C = 2
+    MIN_X1 = 2
     def __init__(self, x1, x2, x3, a, c=None):
         c = c or ForceGraph.C
+        x1, x2, x3 = sorted((x1, x2, x3))
         self._data = (x1, x2, x3, a, c)
 
     def get_at(self, x):
@@ -105,7 +107,10 @@ class RuleSet:
 
     def randomize(self):
         for i in range(len(self._forces)):
-            self._forces[i] = ForceGraph(2, 10, 18, 5, 5)
+            x1 = rng.uniform(ForceGraph.MIN_X1, 10)
+            x2 = rng.uniform(ForceGraph.MIN_X1, 20)
+            x3 = rng.uniform(ForceGraph.MIN_X1, 30)
+            self._forces[i] = ForceGraph(x1, x2, x3, 5, 5)
 
     def __getitem__(self, i):
         return self._forces[i]
