@@ -180,7 +180,8 @@ class Environment:
         self._particles.add(Particle(*pos, id))
 
     def add_random_particle(self):
-        pos = (rng.uniform(0, self.width), rng.uniform(0, self.height))
+        pos = (rng.uniform(-self.width, self.width),
+               rng.uniform(-self.height, self.height))
         _id = rng.randint(0, self._rule.dim - 1)
         self.add_particle(pos, _id)
 
