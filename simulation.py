@@ -63,32 +63,57 @@ class Particle:
         self._vel = vector
 
 
+class ForceGraph:
+    C = 2
+    def __init__(self, x1, x2, x3, a, c=None):
+        c = c or ForceGraph.C
+        self._data = (x1, x2, x3, a, c)
+
+    def get_at(self, x):
+        x = abs(x)
+
+        # Particles too far separated
+        if x > self._data[2]:
+            return 0
+
+        # Partle repulsion force
+        if x < self._data[0]:
+            a = -self._data[4] / (self._data[0]**2)
+            b = (2 * self._data[4]) / self._data[0]
+            c = -self._data[4]
+            return a * x**2 + b * x + c
+
+        # First half of attraction zone
+        if x < self._data[1]:
+            m = self._data[3] / (self._data[1] - self._data[0])
+            b = -m * self._data[0]
+        # Second half of attraction zone
+        else:
+            m = -self._data[3] / (self._data[2] - self._data[1])
+            b = -m * self._data[2]
+
+        return m * x + b
+
 class RuleSet:
     def __init__(self, dim):
-        self.fill(0, dim)
-
-    def fill(self, value, dim=None):
-        dim = dim or self.dim
-        self._val = [[value for _ in range(dim)] for _ in range(dim)]
+        self._dim = dim
+        self._forces = [None for _ in range(dim**2)]
 
     @property
     def dim(self):
-        return len(self._val)
+        return self._dim
 
     def randomize(self):
-        for row in self._val:
-            for j in range(self.dim):
-                row[j] = rng.random() * 2 - 1
+        for i in range(len(self._forces)):
+            self._forces[i] = ForceGraph(2, 10, 18, 5, 5)
 
     def __getitem__(self, i):
-        return self._val[i]
+        return self._forces[i]
 
     def make_symmetric(self):
-        for i in range(self.dim - 1):
-            for j in range(i + 1, self.dim):
-                new_val = (self._val[i][j] + self._val[j][i]) / 2
-                self._val[i][j] = new_val
-                self._val[j][i] = new_val
+        for i in range(self._dim - 1):
+            for j in range(i + 1, self._dim):
+                self._forces[self._dim * i + j] = self._forces[self._dim * j + i]
 
 
 class BoundaryType(Enum):
@@ -139,6 +164,7 @@ class Environment:
             p1._limits = list()
 
             for p2 in self._particles - {p1}:
+                rule = self._rule[self._rule.dim * p1._id + p2._id]
                 diff = p2.pos - p1.pos
 
                 if self._boundary == BoundaryType.TORUS:
@@ -155,11 +181,15 @@ class Environment:
 
                 dist = norm(diff)
 
+                '''
                 if dist < 2:  # Overlapping Particles
                     p1._limits.append(diff / dist)
                     diff = diff * -(dist - 2) ** 2
                 else:  # Apply rule
                     diff = diff * self._rule[p1._id][p2._id] / (dist**2)
+                '''
+
+                diff = rule.get_at(dist) * diff / dist
 
                 p1._buffer += diff * delta
 
@@ -183,4 +213,10 @@ class Environment:
                 pos[0][1] = ((pos[0][1] + hei) % self.height) - hei
 
             particle.set_pos(pos)
+
+
+if __name__ == '__main__':
+    demo = ForceGraph(2, 4, 6, 10, 5)
+    for i in np.arange(0, 11, 0.25):
+        print(i, demo.get_at(i))
 
