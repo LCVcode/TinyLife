@@ -6,12 +6,11 @@ import time
 import numpy as np
 
 
-env = Environment((40, 80), boundary=BoundaryType.FIXED)
+env = Environment((40, 80), boundary=BoundaryType.TORUS)
 
-rule = RuleSet(2)
+rule = RuleSet(3)
 rule.randomize()
-rule.make_symmetric()
-print(rule)
+# rule.make_symmetric()
 
 env.set_rule(rule)
 for _ in range(20):

@@ -5,8 +5,8 @@ from numpy.linalg import norm
 
 class Particle:
     def __init__(self, x, y, id=0):
-        self._pos = np.array([x, y]).reshape((1, 2))
-        self._vel = np.array([0, 0]).reshape((1, 2))
+        self._pos = np.array([x, y], dtype=np.float64).reshape((1, 2))
+        self._vel = np.array([0, 0], dtype=np.float64).reshape((1, 2))
         self._id = id
 
     @property
@@ -62,6 +62,9 @@ class Particle:
     def set_vel(self, vector):
         self._vel = vector
 
+    def current_speed(self):
+        return norm(self._vel)
+
 
 class ForceGraph:
     C = 2
@@ -96,6 +99,10 @@ class ForceGraph:
 
         return m * x + b
 
+    @property
+    def data(self):
+        return self._data
+
 class RuleSet:
     def __init__(self, dim):
         self._dim = dim
@@ -109,8 +116,11 @@ class RuleSet:
         for i in range(len(self._forces)):
             x1 = rng.uniform(ForceGraph.MIN_X1, 10)
             x2 = rng.uniform(ForceGraph.MIN_X1, 20)
-            x3 = rng.uniform(ForceGraph.MIN_X1, 30)
-            self._forces[i] = ForceGraph(x1, x2, x3, 5, 5)
+            x3 = rng.uniform(ForceGraph.MIN_X1, 60)
+            a = rng.uniform(0.5, 3)
+            if rng.choice((True, False)):
+                    a *= -1
+            self._forces[i] = ForceGraph(x1, x2, x3, a, 5)
 
     def __getitem__(self, i):
         return self._forces[i]
@@ -120,6 +130,17 @@ class RuleSet:
             for j in range(i + 1, self._dim):
                 self._forces[self._dim * i + j] = self._forces[self._dim * j + i]
 
+    def __str__(self):
+        rep = ""
+        for row in range(self._dim):
+            rep += '['
+            for col in range(self._dim):
+                data = self._forces[row * self._dim + col].data
+                data = map(lambda x: round(x, 2), data)
+                print(tuple(data))
+            rep += ']\n'
+        return rep
+
 
 class BoundaryType(Enum):
     FIXED = 0
@@ -127,11 +148,13 @@ class BoundaryType(Enum):
 
 
 class Environment:
+    MU = 0.002
     def __init__(self, shape, rule=None, boundary=None):
         self._boundary = boundary or BoundaryType.FIXED
         self._shape = shape
         self._particles = set()
         self._rule = rule
+        self._masses = tuple()
 
     def set_rule(self, rule):
         if not isinstance(rule, RuleSet):
@@ -173,7 +196,6 @@ class Environment:
                 diff = p2.pos - p1.pos
 
                 if self._boundary == BoundaryType.TORUS:
-
                     if diff[0][0] > wid:
                         diff[0][0] -= self.width
                     elif diff[0][0] < -wid:
@@ -186,28 +208,16 @@ class Environment:
 
                 dist = norm(diff)
 
-                '''
-                if dist < 2:  # Overlapping Particles
-                    p1._limits.append(diff / dist)
-                    diff = diff * -(dist - 2) ** 2
-                else:  # Apply rule
-                    diff = diff * self._rule[p1._id][p2._id] / (dist**2)
-                '''
-
                 diff = rule.get_at(dist) * diff / dist
 
                 p1._buffer += diff * delta
 
         # Move Particles
         for particle in self._particles:
-
-            # Apply Particle limits, if any
-            for lim in particle._limits:
-                x = particle._buffer.dot(lim.T)
-                if x > 0:
-                    particle._buffer -= lim * x
-
-            pos = particle.pos + particle._buffer
+            particle._vel += (particle._buffer * delta)
+            speed = particle.current_speed()
+            particle._vel *= max(0, speed - Environment.MU) / speed
+            pos = particle.pos + particle.vel * delta
 
             # Fixed boundary condition
             if self._boundary == BoundaryType.FIXED:
