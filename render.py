@@ -28,7 +28,7 @@ def get_window(env):
     return window
 
 
-def render(window, env, fps):
+def render(window, env, fps, metrics):
     window.fill(_config['bg'])
     scale = _config['scale']
 
@@ -43,8 +43,14 @@ def render(window, env, fps):
             print(pos)
             print(e)
 
-    metrics = _font.render(str(fps), True, (255,255,255))
-    window.blit(metrics, (5, 5))
+    white = (255,255,255)
+    fps_metric = _font.render(str(fps), True, white)
+    speed_metric = _font.render("Spd:" + \
+                                str(round(metrics['total_speed'], 2)),
+                                True,
+                                white)
+    window.blit(fps_metric, (5, 5))
+    window.blit(speed_metric, (5, 15))
 
     pg.display.flip()
 
@@ -70,8 +76,8 @@ def main_loop(window, env):
                     paused = not paused
 
         if not paused:
-            env.tick(0.05)
-            render(window, env, fps)
+            env_metrics = env.tick(0.05)
+            render(window, env, fps, env_metrics)
 
     pg.quit()
 

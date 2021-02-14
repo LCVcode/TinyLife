@@ -257,17 +257,13 @@ class Environment:
         if self._boundary == BoundaryType.FIXED:
             if pos[0][0] < -wid and vel[0][0] < 0:
                 vel[0][0] *= -1
-                pos[0][0] = -wid
             if pos[0][0] > wid and vel[0][0] > 0:
                 vel[0][0] *= -1
-                pos[0][0] = wid
 
             if pos[0][1] < -hei and vel[0][1] < 0:
                 vel[0][1] *= -1
-                pos[0][1] = -hei
             if pos[0][1] > hei and vel[0][1] > 0:
                 vel[0][1] *= -1
-                pos[0][1] = hei
 
         return pos, vel
 

@@ -6,7 +6,7 @@ import time
 import numpy as np
 
 
-env = Environment((40, 80), boundary=BoundaryType.FIXED)
+env = Environment((10, 10), boundary=BoundaryType.FIXED)
 
 rule = RuleSet(3)
 rule.randomize()
@@ -16,6 +16,9 @@ print(rule)
 env.set_rule(rule)
 for _ in range(5):
     env.add_random_particle()
+
+for particle in env._particles:
+    print(particle.pos)
 
 win = get_window(env)
 
