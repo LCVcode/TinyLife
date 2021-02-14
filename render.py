@@ -35,7 +35,11 @@ def render(window, env):
                par.pos[0][1] * scale + (env.height * scale / 2))
         color = _config['colors'][par.id]
 
-        pg.draw.circle(window, color, pos, scale)
+        try:
+            pg.draw.circle(window, color, pos, scale)
+        except TypeError as e:
+            print(pos)
+            print(e)
 
     pg.display.flip()
 

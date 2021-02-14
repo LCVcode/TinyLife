@@ -120,7 +120,7 @@ class RuleSet:
             a = rng.uniform(0.5, 3)
             if rng.choice((True, False)):
                     a *= -1
-            self._forces[i] = ForceGraph(x1, x2, x3, a, 5)
+            self._forces[i] = ForceGraph(x1, x2, x3, a, 10)
 
     def __getitem__(self, i):
         return self._forces[i]
@@ -133,12 +133,15 @@ class RuleSet:
     def __str__(self):
         rep = ""
         for row in range(self._dim):
-            rep += '['
+            rep += '[ '
             for col in range(self._dim):
+                rep += '('
                 data = self._forces[row * self._dim + col].data
                 data = map(lambda x: round(x, 2), data)
-                print(tuple(data))
-            rep += ']\n'
+                data = (str(x).rjust(6, ' ') for x in data)
+                rep += " | ".join(data)
+                rep += ')'
+            rep += ' ]\n'
         return rep
 
 
@@ -209,6 +212,9 @@ class Environment:
 
                 dist = norm(diff)
 
+                if not dist:
+                    continue
+
                 diff = rule.get_at(dist) * diff / dist
 
                 p1._buffer += diff * delta
@@ -217,6 +223,8 @@ class Environment:
         for particle in self._particles:
             particle._vel += (particle._buffer * delta)
             speed = particle.current_speed()
+            if not speed:
+                continue
             particle._vel *= max(0, speed - Environment.MU) / speed
             pos = particle.pos + particle.vel * delta
 
