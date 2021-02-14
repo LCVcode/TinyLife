@@ -8,13 +8,13 @@ import numpy as np
 
 env = Environment((40, 80), boundary=BoundaryType.FIXED)
 
-rule = RuleSet(2)
+rule = RuleSet(3)
 rule.randomize()
-rule.make_symmetric()
+# rule.make_symmetric()
 print(rule)
 
 env.set_rule(rule)
-for _ in range(20):
+for _ in range(5):
     env.add_random_particle()
 
 win = get_window(env)

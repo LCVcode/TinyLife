@@ -1,7 +1,9 @@
 from simulation import Particle, Environment
 import pygame as pg
 
+pg.init()
 
+_font = pg.font.SysFont(None, 16)
 _config = {
         'scale': 10,
         'colors': [(178, 34, 34),  # Firebrick
@@ -26,7 +28,7 @@ def get_window(env):
     return window
 
 
-def render(window, env):
+def render(window, env, fps):
     window.fill(_config['bg'])
     scale = _config['scale']
 
@@ -41,6 +43,9 @@ def render(window, env):
             print(pos)
             print(e)
 
+    metrics = _font.render(str(fps), True, (255,255,255))
+    window.blit(metrics, (5, 5))
+
     pg.display.flip()
 
 
@@ -50,7 +55,8 @@ def main_loop(window, env):
     running, paused = True, False
 
     while running:
-        time = clock.tick(0)
+        clock.tick(60)
+        fps = int(clock.get_fps())
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -65,7 +71,7 @@ def main_loop(window, env):
 
         if not paused:
             env.tick(0.05)
-            render(window, env)
+            render(window, env, fps)
 
     pg.quit()
 
