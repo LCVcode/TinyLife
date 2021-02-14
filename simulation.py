@@ -236,16 +236,6 @@ class Environment:
 
             pos, vel = self.apply_boundary_rules(pos, particle.vel)
 
-            '''
-            # Fixed boundary condition
-            if self._boundary == BoundaryType.FIXED:
-                pos[0][0] = max(-wid+1, min(wid-1, pos[0][0]))
-                pos[0][1] = max(-hei+1, min(hei-1, pos[0][1]))
-            elif self._boundary == BoundaryType.TORUS:
-                pos[0][0] = ((pos[0][0] + wid) % self.width) - wid
-                pos[0][1] = ((pos[0][1] + hei) % self.height) - hei
-            '''
-
             particle.set_pos(pos)
             particle.set_vel(vel)
 
