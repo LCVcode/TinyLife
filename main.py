@@ -14,7 +14,7 @@ rule.randomize()
 print(rule)
 
 env.set_rule(rule)
-for _ in range(5):
+for _ in range(15):
     env.add_random_particle()
 
 for particle in env._particles:

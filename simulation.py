@@ -269,6 +269,11 @@ class Environment:
                 vel[0][1] *= -1
                 pos[0][1] = hei
 
+        elif self._boundary == BoundaryType.TORUS:
+            pos[0][0] = ((pos[0][0] + wid) % self.width) - wid
+            pos[0][1] = ((pos[0][1] + hei) % self.height) - hei
+
+
         return pos, vel
 
 
