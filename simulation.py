@@ -65,6 +65,12 @@ class Particle:
     def current_speed(self):
         return norm(self._vel)
 
+    def give_random_speed(self, min_vel=0, max_vel=1):
+        theta = rng.uniform(0, 2*np.pi)
+        vel = rng.uniform(min_vel, max_vel)
+        self._vel[0][0] = np.cos(theta) * vel
+        self._vel[0][1] = np.sin(theta) * vel
+
 
 class ForceGraph:
     C = 2
@@ -116,7 +122,7 @@ class RuleSet:
         for i in range(len(self._forces)):
             x1 = rng.uniform(ForceGraph.MIN_X1, 10)
             x2 = rng.uniform(ForceGraph.MIN_X1, 20)
-            x3 = rng.uniform(ForceGraph.MIN_X1, 60)
+            x3 = rng.uniform(ForceGraph.MIN_X1, 30)
             a = rng.uniform(0.5, 3)
             if rng.choice((True, False)):
                     a *= -1
@@ -138,7 +144,7 @@ class RuleSet:
                 rep += '('
                 data = self._forces[row * self._dim + col].data
                 data = map(lambda x: round(x, 2), data)
-                data = (str(x).rjust(6, ' ') for x in data)
+                data = (str(x).rjust(5, ' ') for x in data)
                 rep += " | ".join(data)
                 rep += ')'
             rep += ' ]\n'
@@ -151,7 +157,7 @@ class BoundaryType(Enum):
 
 
 class Environment:
-    MU = 0.002
+    MU = 0.005
     def __init__(self, shape, rule=None, boundary=None):
         self._boundary = boundary or BoundaryType.FIXED
         self._shape = shape
@@ -263,8 +269,11 @@ class Environment:
             pos[0][0] = ((pos[0][0] + wid) % self.width) - wid
             pos[0][1] = ((pos[0][1] + hei) % self.height) - hei
 
-
         return pos, vel
+
+    def give_random_speeds(self, low, high):
+        for part in self._particles:
+            part.give_random_speed(low, high)
 
 
 if __name__ == '__main__':

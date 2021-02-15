@@ -6,19 +6,17 @@ import time
 import numpy as np
 
 
-env = Environment((10, 10), boundary=BoundaryType.FIXED)
+env = Environment((40, 40), boundary=BoundaryType.FIXED)
 
-rule = RuleSet(3)
+rule = RuleSet(4)
 rule.randomize()
 # rule.make_symmetric()
 print(rule)
 
 env.set_rule(rule)
-for _ in range(15):
+for _ in range(30):
     env.add_random_particle()
-
-for particle in env._particles:
-    print(particle.pos)
+env.give_random_speeds(0, 10)
 
 win = get_window(env)
 
