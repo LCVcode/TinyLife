@@ -78,7 +78,7 @@ class ForceGraph:
     def __init__(self, x1, x2, x3, a, c=None):
         c = c or ForceGraph.C
         x1, x2, x3 = sorted((x1, x2, x3))
-        self._data = (x1, x2, x3, a, c)
+        self._data = [x1, x2, x3, a, c]
 
     def get_at(self, x):
         x = abs(x)
@@ -108,6 +108,56 @@ class ForceGraph:
     @property
     def data(self):
         return self._data
+
+    @property
+    def x1(self):
+        return self._data[0]
+
+    @x1.setter
+    def x1(self, value):
+        if not type(value) in (float, int):
+            raise TypeError("Expected int or float")
+        self._data[0] = value
+
+    @property
+    def x2(self):
+        return self._data[1]
+
+    @x1.setter
+    def x2(self, value):
+        if not type(value) in (float, int):
+            raise TypeError("Expected int or float")
+        self._data[1] = value
+
+    @property
+    def x3(self):
+        return self._data[2]
+
+    @x1.setter
+    def x3(self, value):
+        if not type(value) in (float, int):
+            raise TypeError("Expected int or float")
+        self._data[2] = value
+
+    @property
+    def c(self):
+        return self._data[4]
+
+    @c.setter
+    def c(self, value):
+        if not type(value) in (float, int):
+            raise TypeError("Expected int or float")
+        self._data[4] = value
+
+    @property
+    def a(self):
+        return self._data[3]
+
+    @a.setter
+    def a(self, value):
+        if not type(value) in (float, int):
+            raise TypeError("Expected int or float")
+        self._data[3] = value
 
 class RuleSet:
     def __init__(self, dim):

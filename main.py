@@ -6,11 +6,18 @@ import time
 import numpy as np
 
 
-env = Environment((40, 40), boundary=BoundaryType.FIXED)
+env = Environment((20, 20), boundary=BoundaryType.FIXED)
 
 rule = RuleSet(4)
 rule.randomize()
-# rule.make_symmetric()
+rule.make_symmetric()
+
+rule._forces[0].x1 = 2
+rule._forces[0].x2 = 3
+rule._forces[0].x3 = 4
+rule._forces[0].c = 5
+rule._forces[0].a = 10
+
 print(rule)
 
 env.set_rule(rule)
