@@ -262,14 +262,14 @@ class Environment:
 
                 if self._boundary == BoundaryType.TORUS:
                     if diff[0][0] > wid:
-                        diff[0][0] -= self.width
+                        diff[0][0] -= self.shape[1]
                     elif diff[0][0] < -wid:
-                        diff[0][0] += self.width
+                        diff[0][0] += self.shape[1]
 
                     if diff[0][1] > hei:
-                        diff[0][1] -= self.height
+                        diff[0][1] -= self.shape[0]
                     elif diff[0][1] < -hei:
-                        diff[0][1] += self.height
+                        diff[0][1] += self.shape[0]
 
                 dist = norm(diff)
 

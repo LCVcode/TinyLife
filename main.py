@@ -6,17 +6,30 @@ import time
 import numpy as np
 
 
-env = Environment((20, 20), boundary=BoundaryType.FIXED)
+env = Environment((20, 20), boundary=BoundaryType.TORUS)
 
-rule = RuleSet(4)
+rule = RuleSet(2)
 rule.randomize()
-rule.make_symmetric()
 
-rule._forces[0].x1 = 2
-rule._forces[0].x2 = 3
-rule._forces[0].x3 = 4
-rule._forces[0].c = 5
-rule._forces[0].a = 10
+rule._forces[0].x1 = 5
+rule._forces[0].x2 = 10
+rule._forces[0].x3 = 15
+rule._forces[0].c = 10
+rule._forces[0].a = -18
+
+rule._forces[2].x1 = 2
+rule._forces[2].x2 = 10
+rule._forces[2].x3 = 30
+rule._forces[2].c = 10
+rule._forces[2].a = 7.5
+
+rule._forces[3].x1 = 5
+rule._forces[3].x2 = 10
+rule._forces[3].x3 = 30
+rule._forces[3].c = 10
+rule._forces[3].a = -7.5
+
+rule.make_symmetric()
 
 print(rule)
 
