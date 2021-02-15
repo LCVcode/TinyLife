@@ -87,27 +87,47 @@ class ForceGraph:
         if x > self._data[2]:
             return 0
 
-        # Partle repulsion force
-        if x < self._data[0]:
-            a = -self._data[4] / (self._data[0]**2)
-            b = (2 * self._data[4]) / self._data[0]
-            c = -self._data[4]
-            return a * x**2 + b * x + c
+        # Positive a (attractive forces)
+        if self.a > 0:
+            # Partle repulsion force
+            if x < self._data[0]:
+                a = -self._data[4] / (self._data[0]**2)
+                b = (2 * self._data[4]) / self._data[0]
+                c = -self._data[4]
+                return a * x**2 + b * x + c
 
-        # First half of attraction zone
-        if x < self._data[1]:
-            m = self._data[3] / (self._data[1] - self._data[0])
-            b = -m * self._data[0]
-        # Second half of attraction zone
+            # First half of attraction zone
+            if x < self._data[1]:
+                m = self._data[3] / (self._data[1] - self._data[0])
+                b = -m * self._data[0]
+            # Second half of attraction zone
+            else:
+                m = -self._data[3] / (self._data[2] - self._data[1])
+                b = -m * self._data[2]
+
+            return m * x + b
+
+        # Negative a (repellant forces)
         else:
-            m = -self._data[3] / (self._data[2] - self._data[1])
-            b = -m * self._data[2]
+            # Flat internal force
+            if x < self._data[0]:
+                return -self._data[4]
 
-        return m * x + b
+            # First half of repellant zone
+            if x < self._data[1]:
+                m = (self.a + self.c) / (self.x2 - self.x1)
+                b = self.a - (m * self.x2)
+                return m * x + b
+
+            # Second half of repellant zone
+            else:
+                m = -self.a / (self.x3 - self.x2)
+                b = -m * self.x3
+                return m * x + b
 
     @property
     def data(self):
-        return self._data
+        return tuple(self._data)
 
     @property
     def x1(self):
@@ -123,7 +143,7 @@ class ForceGraph:
     def x2(self):
         return self._data[1]
 
-    @x1.setter
+    @x2.setter
     def x2(self, value):
         if not type(value) in (float, int):
             raise TypeError("Expected int or float")
@@ -133,7 +153,7 @@ class ForceGraph:
     def x3(self):
         return self._data[2]
 
-    @x1.setter
+    @x3.setter
     def x3(self, value):
         if not type(value) in (float, int):
             raise TypeError("Expected int or float")
@@ -207,7 +227,7 @@ class BoundaryType(Enum):
 
 
 class Environment:
-    MU = 0.005
+    MU = 0.002
     def __init__(self, shape, rule=None, boundary=None):
         self._boundary = boundary or BoundaryType.FIXED
         self._shape = shape
